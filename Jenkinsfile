@@ -25,7 +25,14 @@ pipeline {
 
     stage('Test') {
       steps {
-        sh 'npm test'
+        sh '''
+        TEST_CMD=$(node -p "require('./package.json').scripts?.test || ''")
+        if echo "$TEST_CMD" | grep -qi "no test specified"; then
+            echo "No tests configured, skipping..."
+            exit 0
+        fi
+        npm test
+        '''
       }
     }
 
