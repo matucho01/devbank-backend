@@ -1,0 +1,29 @@
+version: 0.2
+
+env:
+  variables:
+    IMAGE_REPO: "matucho01/devbank-backend"
+    CONTAINER_NAME: "backend"
+
+phases:
+  pre_build:
+    commands:
+      - echo "Logging into DockerHub..."
+      - echo "$DOCKERHUB_PASSWORD" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
+      - IMAGE_TAG=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
+      - if [ -z "$IMAGE_TAG" ]; then IMAGE_TAG="latest"; fi
+      - echo "IMAGE_TAG=$IMAGE_TAG"
+  build:
+    commands:
+      - echo "Build docker image..."
+      - docker build -t "$IMAGE_REPO:$IMAGE_TAG" .
+  post_build:
+    commands:
+      - echo "Push docker image..."
+      - docker push "$IMAGE_REPO:$IMAGE_TAG"
+      - echo "Writing imagedefinitions.json..."
+      - printf '[{"name":"%s","imageUri":"docker.io/%s:%s"}]' "$CONTAINER_NAME" "$IMAGE_REPO" "$IMAGE_TAG" > imagedefinitions.json
+
+artifacts:
+  files:
+    - imagedefinitions.json
