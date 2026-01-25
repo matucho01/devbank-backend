@@ -114,7 +114,7 @@ The `Jenkinsfile` defines a complete CI/CD pipeline with the following stages:
 ```
 1. In Jenkins, create a credential of type "Username with password"
 2. Username: matucho01
-3. Password: <Your DockerHub Token>
+3. Password: (if needed, to recreate this scenario, contact the dev at mailto:pcristopher593@gmail.com)
 4. Credential ID: dockerhub-matucho01
 ```
 
